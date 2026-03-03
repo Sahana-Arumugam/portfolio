@@ -191,6 +191,7 @@ const CustomCursor = () => {
     'home' | 'skills' | 'projects' | 'contact' | 'default'
   >('home');
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -211,6 +212,22 @@ const CustomCursor = () => {
   const trail3Y = useSpring(mouseY, { damping: 55, stiffness: 80, mass: 1.5 });
 
   useEffect(() => {
+    // Detect touch device
+    const detectTouch = () => {
+      const hasTouch = () => {
+        return (
+          (typeof window !== 'undefined' &&
+            ('ontouchstart' in window ||
+              (navigator.maxTouchPoints !== undefined &&
+                navigator.maxTouchPoints > 0))) ||
+          false
+        );
+      };
+      setIsTouchDevice(hasTouch());
+    };
+
+    detectTouch();
+
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
@@ -225,7 +242,7 @@ const CustomCursor = () => {
     };
 
     const handleMouseEnter = () => {
-      setCursorVisible(true);
+      setCursorVisible(!isTouchDevice);
     };
 
     const handleBlur = () => {
@@ -233,14 +250,22 @@ const CustomCursor = () => {
     };
 
     const handleFocus = () => {
-      setCursorVisible(true);
+      setCursorVisible(!isTouchDevice);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('focus', handleFocus);
+    const handleTouchStart = () => {
+      setCursorVisible(false);
+    };
+
+    if (!isTouchDevice) {
+      window.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseleave', handleMouseLeave);
+      document.addEventListener('mouseenter', handleMouseEnter);
+      window.addEventListener('blur', handleBlur);
+      window.addEventListener('focus', handleFocus);
+    }
+    
+    document.addEventListener('touchstart', handleTouchStart);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -248,8 +273,9 @@ const CustomCursor = () => {
       document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('touchstart', handleTouchStart);
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isTouchDevice]);
 
   // Velocity-based effects
   const speed = useTransform([velocityX, velocityY], ([vx, vy]) =>
@@ -782,7 +808,7 @@ const ExperienceSection = () => {
   logo: ieee_its_logo
 }
             ].map((exp, idx) => (
-              <div key={exp.company} className="relative flex flex-col md:flex-row items-center">
+              <div key={exp.company} className="relative flex flex-col md:flex-row items-start">
                 {/* Timeline Node */}
                 <TimelineNode />
 
@@ -792,17 +818,17 @@ const ExperienceSection = () => {
                   whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="w-full md:ml-20 group relative"
+                  className="w-full ml-4 md:ml-20 group relative"
                 >
                   {/* Radial Light Background */}
 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(198,142,23,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />                  
-                  <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-8 hover:border-copper-light/30 transition-all duration-500 shadow-2xl">
+                  <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-4 sm:p-8 hover:border-copper-light/30 transition-all duration-500 shadow-2xl">
                     {/* Top Accent Line */}
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-copper-light/40 to-transparent" />
                     
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 shrink-0 flex items-center justify-center border border-copper-light/20 bg-elite-dark/50 overflow-hidden group-hover:border-copper-light transition-colors duration-500">
+                    <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center border border-copper-light/20 bg-elite-dark/50 overflow-hidden group-hover:border-copper-light transition-colors duration-500">
                           <img 
                             src={exp.logo} 
                             alt={exp.company} 
@@ -810,20 +836,20 @@ const ExperienceSection = () => {
                             referrerPolicy="no-referrer"
                           />
                         </div>
-                        <div>
-                          <h4 className="text-xl font-bold text-white leading-tight">{exp.role}</h4>
-                          <p className="text-copper-light text-xs uppercase tracking-[0.2em] mt-1">{exp.company}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-base sm:text-xl font-bold text-white leading-tight">{exp.role}</h4>
+                          <p className="text-copper-light text-[10px] sm:text-xs uppercase tracking-[0.2em] mt-1 line-clamp-2">{exp.company}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-medium whitespace-nowrap bg-white/5 px-3 py-1 rounded-full self-start sm:self-center">
+                      <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-white/30 font-medium bg-white/5 px-3 py-1 rounded-full w-fit">
                         {exp.period}
                       </span>
                     </div>
 
-                    <ul className="space-y-4">
+                    <ul className="space-y-3 sm:space-y-4">
                       {exp.points.map((point, pIdx) => (
-                        <li key={pIdx} className="text-white/50 text-sm font-light leading-relaxed flex items-start gap-4 group/item">
-                          <span className="w-1.5 h-[1px] bg-copper-light/40 mt-2.5 shrink-0 group-hover/item:w-3 transition-all duration-300" />
+                        <li key={pIdx} className="text-white/50 text-xs sm:text-sm font-light leading-relaxed flex items-start gap-3 sm:gap-4 group/item">
+                          <span className="w-1.5 h-[1px] bg-copper-light/40 mt-2 sm:mt-2.5 shrink-0 group-hover/item:w-3 transition-all duration-300" />
                           <span className="group-hover/item:text-white/70 transition-colors duration-300">{point}</span>
                         </li>
                       ))}
@@ -893,12 +919,12 @@ const AchievementsSection = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.1 }}
-                  className="w-full md:ml-20 group relative"
+                  className="w-full ml-4 md:ml-20 group relative"
                 >
                   <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-0 hover:border-copper-light/30 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col lg:flex-row">
                     {/* Image Section */}
                     {ach.image && (
-                      <div className="w-full lg:w-2/5 h-64 lg:h-auto overflow-hidden relative">
+                      <div className="w-full lg:w-2/5 h-48 sm:h-64 lg:h-auto overflow-hidden relative">
                         <motion.img 
                           src={ach.image} 
                           alt={ach.event} 
@@ -915,27 +941,27 @@ const AchievementsSection = () => {
                     )}
 
                     {/* Content Section */}
-                    <div className={`${ach.image ? 'flex-1' : 'w-full'} p-8 relative`}>
+                    <div className={`${ach.image ? 'flex-1' : 'w-full'} p-4 sm:p-8 relative`}>
                       {/* Top Accent Line */}
                       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-copper-light/40 via-transparent to-transparent" />
                       
-                      <div className="flex justify-between items-start mb-6">
-                        <div>
-                          <h4 className="text-2xl font-serif text-white group-hover:text-copper-light transition-colors duration-500">
+                      <div className="flex justify-between items-start mb-4 sm:mb-6">
+                        <div className="flex-1">
+                          <h4 className="text-lg sm:text-2xl font-serif text-white group-hover:text-copper-light transition-colors duration-500">
                             {ach.title}
                           </h4>
-                          <p className="text-white/40 text-xs uppercase tracking-widest mt-1">
+                          <p className="text-white/40 text-[10px] sm:text-xs uppercase tracking-widest mt-1 line-clamp-2">
                             {ach.event}
                           </p>
                         </div>
                       </div>
 
-                      <p className="text-white/50 text-sm font-light leading-relaxed mb-8 max-w-xl">
+                      <p className="text-white/50 text-xs sm:text-sm font-light leading-relaxed mb-6 sm:mb-8">
                         {ach.desc}
                       </p>
 
                       {/* Creative Element: Decorative Numbers */}
-                      <div className="absolute bottom-4 right-8 opacity-[0.03] text-8xl font-serif text-white pointer-events-none select-none">
+                      <div className="absolute bottom-2 right-4 sm:bottom-4 sm:right-8 opacity-[0.03] text-6xl sm:text-8xl font-serif text-white pointer-events-none select-none">
                         0{idx + 1}
                       </div>
                     </div>
