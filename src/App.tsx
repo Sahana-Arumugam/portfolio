@@ -187,19 +187,22 @@ const TechnologyIcon = ({ name, slug, delay }: { name: string, slug: string, del
 
 const CustomCursor = () => {
   const [isHovering, setIsHovering] = useState(false);
-  const [activeSection, setActiveSection] = useState<'home' | 'skills' | 'projects' | 'contact' | 'default'>('home');
-  
+  const [activeSection, setActiveSection] = useState<
+    'home' | 'skills' | 'projects' | 'contact' | 'default'
+  >('home');
+  const [cursorVisible, setCursorVisible] = useState(true);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  
+
   const velocityX = useVelocity(mouseX);
   const velocityY = useVelocity(mouseY);
-  
-  // Main Spark with high responsiveness
+
+  // Main Spark Spring
   const sparkX = useSpring(mouseX, { damping: 25, stiffness: 350, mass: 0.4 });
   const sparkY = useSpring(mouseY, { damping: 25, stiffness: 350, mass: 0.4 });
 
-  // Trail elements with varying lag for a more organic, fluid feel
+  // Trail Springs
   const trail1X = useSpring(mouseX, { damping: 35, stiffness: 180, mass: 0.7 });
   const trail1Y = useSpring(mouseY, { damping: 35, stiffness: 180, mass: 0.7 });
   const trail2X = useSpring(mouseX, { damping: 45, stiffness: 120, mass: 1.1 });
@@ -211,139 +214,134 @@ const CustomCursor = () => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
+
       const target = e.target as HTMLElement;
       const isInteractive = target.closest('button, a, .interactive');
       setIsHovering(!!isInteractive);
     };
 
-    const observerOptions = { threshold: 0.5 };
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          if (['home', 'skills', 'projects', 'contact'].includes(id)) {
-            setActiveSection(id as any);
-          } else {
-            setActiveSection('default');
-          }
-        }
-      });
+    const handleMouseLeave = () => {
+      setCursorVisible(false);
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    ['home', 'skills', 'projects', 'contact', 'about', 'experience', 'achievements'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    const handleMouseEnter = () => {
+      setCursorVisible(true);
+    };
 
     window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      observer.disconnect();
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
     };
-  }, []);
+  }, [mouseX, mouseY]);
 
-  // Velocity-based stretching for Projects section
-  const speed = useTransform([velocityX, velocityY], ([vx, vy]) => 
-    Math.sqrt(Math.pow(vx as number, 2) + Math.pow(vy as number, 2))
+  // Velocity-based effects
+  const speed = useTransform([velocityX, velocityY], ([vx, vy]) =>
+    Math.sqrt((vx as number) ** 2 + (vy as number) ** 2)
   );
-  
-  const angle = useTransform([velocityX, velocityY], ([vx, vy]) => 
+
+  const angle = useTransform([velocityX, velocityY], ([vx, vy]) =>
     Math.atan2(vy as number, vx as number) * (180 / Math.PI)
   );
-  
+
   const stretch = useTransform(speed, [0, 2000], [1, 2.2]);
 
   return (
-    <div className="cursor-spark-container hidden md:block">
-      {/* Multi-layered Trail for a fluid, cinematic path */}
-      <motion.div
-        className="fixed top-0 left-0 w-0.5 h-0.5 bg-copper-light/5 rounded-full blur-[2px]"
-        style={{ x: trail3X, y: trail3Y, translateX: '-50%', translateY: '-50%' }}
-      />
-      <motion.div
-        className="fixed top-0 left-0 w-1 h-1 bg-copper-light/10 rounded-full blur-[1.5px]"
-        style={{ x: trail2X, y: trail2Y, translateX: '-50%', translateY: '-50%' }}
-      />
-      <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-copper-light/20 rounded-full blur-[1px]"
-        style={{ x: trail1X, y: trail1Y, translateX: '-50%', translateY: '-50%' }}
-      />
-      
-      {/* Main Spark Assembly */}
-      <motion.div
-        className="fixed top-0 left-0 flex items-center justify-center"
-        style={{ 
-          x: sparkX, 
-          y: sparkY, 
-          translateX: '-50%', 
-          translateY: '-50%',
-          rotate: activeSection === 'projects' ? angle : 0,
-          scaleX: activeSection === 'projects' ? stretch : 1
-        }}
-      >
-        {/* Outer Volumetric Glow */}
+    <AnimatePresence>
+      {cursorVisible && (
         <motion.div
-          animate={{
-            scale: isHovering ? 3.5 : [1, 1.2, 1],
-            opacity: activeSection === 'contact' ? 0.4 : 0.25,
-            backgroundColor: activeSection === 'contact' ? '#D2691E' : '#C68E17'
-          }}
-          transition={{
-            scale: isHovering ? { duration: 0.4 } : { duration: 4, repeat: Infinity, ease: "easeInOut" },
-            opacity: { duration: 0.8 }
-          }}
-          className={cn(
-            "absolute w-12 h-12 rounded-full blur-2xl",
-            activeSection === 'skills' && "blur-xl w-8 h-8"
-          )}
-        />
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 0.4 }}
+          transition={{ duration: 0.3 }}
+          className="cursor-spark-container hidden md:block pointer-events-none"
+        >
+          {/* Trail Layers */}
+          <motion.div
+            className="fixed top-0 left-0 w-0.5 h-0.5 bg-copper-light/5 rounded-full blur-[2px]"
+            style={{ x: trail3X, y: trail3Y, translateX: '-50%', translateY: '-50%' }}
+          />
+          <motion.div
+            className="fixed top-0 left-0 w-1 h-1 bg-copper-light/10 rounded-full blur-[1.5px]"
+            style={{ x: trail2X, y: trail2Y, translateX: '-50%', translateY: '-50%' }}
+          />
+          <motion.div
+            className="fixed top-0 left-0 w-1.5 h-1.5 bg-copper-light/20 rounded-full blur-[1px]"
+            style={{ x: trail1X, y: trail1Y, translateX: '-50%', translateY: '-50%' }}
+          />
 
-        {/* Inner Intense Glow */}
-        <motion.div
-          animate={{
-            scale: isHovering ? 2 : [1, 1.1, 1],
-            opacity: isHovering ? 0.8 : 0.5,
-          }}
-          transition={{
-            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
-          className="absolute w-6 h-6 bg-copper-light/40 rounded-full blur-lg"
-        />
-        
-        {/* Spark Core - Flickering White-Hot Center */}
-        <motion.div
-          animate={{
-            scale: isHovering ? 1.5 : [1, 0.9, 1.1, 1],
-            backgroundColor: activeSection === 'contact' ? '#FF7F50' : '#FFFFFF',
-            boxShadow: isHovering 
-              ? "0 0 25px 4px rgba(198, 142, 23, 0.8)" 
-              : "0 0 12px 2px rgba(198, 142, 23, 0.6)"
-          }}
-          transition={{ 
-            scale: { duration: 0.15, repeat: Infinity, repeatType: "reverse" },
-            backgroundColor: { duration: 0.4 }
-          }}
-          className={cn(
-            "relative w-1.5 h-1.5 rounded-full z-10",
-            activeSection === 'skills' && "w-1 h-1"
-          )}
-        />
-
-        {/* Subtle Halo Ring on Hover */}
-        <AnimatePresence>
-          {isHovering && (
+          {/* Main Spark */}
+          <motion.div
+            className="fixed top-0 left-0 flex items-center justify-center"
+            style={{
+              x: sparkX,
+              y: sparkY,
+              translateX: '-50%',
+              translateY: '-50%',
+              rotate: activeSection === 'projects' ? angle : 0,
+              scaleX: activeSection === 'projects' ? stretch : 1
+            }}
+          >
+            {/* Outer Glow */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1.2 }}
-              exit={{ opacity: 0, scale: 1.5 }}
-              className="absolute inset-0 border border-copper-light/30 rounded-full w-14 h-14 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: '50%', top: '50%' }}
+              animate={{
+                scale: isHovering ? 3.5 : [1, 1.2, 1],
+                opacity: 0.25
+              }}
+              transition={{
+                scale: isHovering
+                  ? { duration: 0.4 }
+                  : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
+              }}
+              className="absolute w-12 h-12 rounded-full blur-2xl bg-copper-light/30"
             />
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </div>
+
+            {/* Inner Glow */}
+            <motion.div
+              animate={{
+                scale: isHovering ? 2 : [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+              className="absolute w-6 h-6 bg-copper-light/40 rounded-full blur-lg"
+            />
+
+            {/* Core */}
+            <motion.div
+              animate={{
+                scale: isHovering ? 1.4 : [1, 0.9, 1.1, 1],
+                boxShadow: isHovering
+                  ? '0 0 25px 4px rgba(198,142,23,0.8)'
+                  : '0 0 12px 2px rgba(198,142,23,0.6)'
+              }}
+              transition={{
+                scale: { duration: 0.2, repeat: Infinity, repeatType: 'reverse' }
+              }}
+              className="relative w-1.5 h-1.5 rounded-full bg-white z-10"
+            />
+
+            {/* Hover Ring */}
+            <AnimatePresence>
+              {isHovering && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1.2 }}
+                  exit={{ opacity: 0, scale: 1.5 }}
+                  className="absolute border border-copper-light/30 rounded-full w-14 h-14"
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
