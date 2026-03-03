@@ -290,7 +290,7 @@ const CustomCursor = () => {
 
   return (
     <AnimatePresence>
-      {cursorVisible && (
+      {cursorVisible && !isTouchDevice && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -818,7 +818,7 @@ const ExperienceSection = () => {
                   whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="w-full ml-4 md:ml-20 group relative"
+                  className="w-full ml-16 md:ml-20 group relative"
                 >
                   {/* Radial Light Background */}
 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(198,142,23,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />                  
@@ -919,7 +919,7 @@ const AchievementsSection = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.1 }}
-                  className="w-full ml-4 md:ml-20 group relative"
+                  className="w-full ml-16 md:ml-20 group relative"
                 >
                   <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-0 hover:border-copper-light/30 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col lg:flex-row">
                     {/* Image Section */}
