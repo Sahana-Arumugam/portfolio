@@ -438,7 +438,10 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+  document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+}, [isOpen]);
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -462,7 +465,8 @@ const Navbar = () => {
   ];
 
   return (
-    <motion.nav 
+    <>
+      <motion.nav 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -488,19 +492,56 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center gap-6">
-        {socialIcons.map((social) => (
-          <a 
-            key={social.label} 
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/50 hover:text-copper-light transition-colors interactive"
-          >
-            <social.icon className="w-5 h-5" />
-          </a>
-        ))}
+  {/* Desktop Social Icons */}
+  <div className="hidden md:flex items-center gap-6">
+    {socialIcons.map((social) => (
+      <a 
+        key={social.label}
+        href={social.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-white/50 hover:text-copper-light transition-colors interactive"
+      >
+        <social.icon className="w-5 h-5" />
+      </a>
+    ))}
+  </div>
+
+  {/* Mobile Hamburger */}
+  <button 
+    onClick={() => setIsOpen(!isOpen)}
+    className="md:hidden flex flex-col gap-1.5"
+  >
+    <span className="w-6 h-[1px] bg-white transition-all" />
+    <span className="w-6 h-[1px] bg-white transition-all" />
+    <span className="w-6 h-[1px] bg-white transition-all" />
+  </button>
       </div>
     </motion.nav>
+
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed top-0 right-0 h-screen w-full bg-elite-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-10"
+    >
+      {navItems.map((item) => (
+        <a
+          key={item.name}
+          href={item.href}
+          onClick={() => setIsOpen(false)}
+          className="text-xl uppercase tracking-[0.4em] text-white hover:text-copper-light transition-colors"
+        >
+          {item.name}
+        </a>
+      ))}
+    </motion.div>
+  )}
+  </AnimatePresence>
+    </>
   );
 };
 
@@ -637,7 +678,7 @@ const ExperienceSection = () => {
 
         <div className="relative">
           {/* Vertical Timeline Line */}
-className="absolute left-4 md:left-8 top-2 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"          
+          <div className="absolute left-4 md:left-8 top-2 bottom-0 w-[1px] bg-white/10 block" />
           {/* Animated Timeline Progress */}
           <motion.div 
             className="absolute left-4 md:left-8 top-2 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"
@@ -759,15 +800,17 @@ const AchievementsSection = () => {
         </div>
 
         <div className="relative">
-          {/* Vertical Timeline Line */}
-        <div className="absolute left-4 md:left-8 top-10 bottom-0 w-[1px] bg-white/10 block" />          
-          {/* Animated Timeline Progress */}
-          <motion.div 
-className="absolute left-4 md:left-8 top-10 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"            style={{ 
-              height: '100%',
-              scaleY
-            }}
-          />
+  {/* Vertical Timeline Line */}
+  <div className="absolute left-4 md:left-8 top-2 bottom-0 w-[1px] bg-white/10 block" />
+
+  {/* Animated Timeline Progress */}
+  <motion.div 
+    className="absolute left-4 md:left-8 top-2 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"
+    style={{ 
+      height: '100%',
+      scaleY
+    }}
+  />
 
 <div className="space-y-20 relative pt-10">            {[
               {
