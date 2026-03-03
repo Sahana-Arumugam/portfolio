@@ -228,14 +228,26 @@ const CustomCursor = () => {
       setCursorVisible(true);
     };
 
+    const handleBlur = () => {
+      setCursorVisible(false);
+    };
+
+    const handleFocus = () => {
+      setCursorVisible(true);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [mouseX, mouseY]);
 
@@ -256,9 +268,9 @@ const CustomCursor = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 0.4 }}
-          transition={{ duration: 0.3 }}
-          className="cursor-spark-container hidden md:block pointer-events-none"
+          exit={{ opacity: 0, scale: 0, pointerEvents: 'none' }}
+          transition={{ duration: 0 }}
+          className="cursor-spark-container pointer-events-none"
         >
           {/* Trail Layers */}
           <motion.div
@@ -344,6 +356,33 @@ const CustomCursor = () => {
     </AnimatePresence>
   );
 };
+
+// reusable timeline node with premium copper glow and pulse
+const TimelineNode = () => (
+  <motion.div
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className="absolute left-4 md:left-8 top-2 -translate-x-1/2 flex items-center justify-center"
+    style={{ width: 20, height: 20 }}
+  >
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* outer ring */}
+      <div className="absolute inset-0 rounded-full border-2 border-copper-light bg-elite-black" />
+      {/* radial glow */}
+      <div className="absolute inset-0 rounded-full blur-xl bg-copper-light/40" />
+      {/* inner core */}
+      <motion.div
+        className="rounded-full bg-copper-light"
+        style={{ width: 8, height: 8 }}
+        animate={{ scale: [1, 1.3, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
+  </motion.div>
+);
+
+
 
 const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [phase, setPhase] = useState<'reveal' | 'zoom'>('reveal');
@@ -439,14 +478,46 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [showNavMobile, setShowNavMobile] = useState(true);
+  const lastScrollY = useRef(0);
+
   useEffect(() => {
-  document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-}, [isOpen]);
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+  }, [isOpen]);
+
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      setIsScrolled(window.scrollY > 50);
+      
+      // On mobile, show navbar when scrolling down, hide when scrolling up
+      if (isMobile && currentScrollY > 100) {
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down - show navbar
+          setShowNavMobile(true);
+        } else {
+          // Scrolling up - hide navbar
+          setShowNavMobile(false);
+        }
+      } else {
+        // At top or near top on mobile - always show
+        setShowNavMobile(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobile]);
 
   const navItems = [
     { name: 'Home', href: '#home' },
@@ -468,8 +539,8 @@ const Navbar = () => {
     <>
       <motion.nav 
       initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      animate={{ y: showNavMobile ? 0 : -100 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-6 transition-all duration-500 flex items-center justify-between",
         isScrolled ? "bg-elite-black/80 backdrop-blur-md border-b border-white/5 py-4" : "bg-transparent"
@@ -634,8 +705,8 @@ const SectionHeading = ({ title, subtitle }: { title: string, subtitle?: string 
     {subtitle && (
       <motion.span 
         initial={{ opacity: 0, x: -20 }}
-        whileInView={{ opacity: 0.6, x: 0 }}
-        viewport={{ once: true }}
+        animate={{ opacity: 0.6, x: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="block text-xs uppercase tracking-[0.3em] font-sans mb-4 text-copper-light"
       >
         {subtitle}
@@ -643,8 +714,7 @@ const SectionHeading = ({ title, subtitle }: { title: string, subtitle?: string 
     )}
     <motion.h2 
       initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="text-4xl md:text-6xl font-serif text-white"
     >
@@ -652,8 +722,7 @@ const SectionHeading = ({ title, subtitle }: { title: string, subtitle?: string 
     </motion.h2>
     <motion.div 
       initial={{ width: 0 }}
-      whileInView={{ width: '100px' }}
-      viewport={{ once: true }}
+      animate={{ width: '100px' }}
       transition={{ delay: 0.5, duration: 1 }}
       className="h-[1px] bg-copper-dark mt-6"
     />
@@ -715,20 +784,7 @@ const ExperienceSection = () => {
             ].map((exp, idx) => (
               <div key={exp.company} className="relative flex flex-col md:flex-row items-center">
                 {/* Timeline Node */}
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-2 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{
-                      backgroundColor: "#C68E17",
-                      boxShadow: "0 0 8px rgba(198,142,23,0.8)"
-                    }}
-                  />
-                </motion.div>
+                <TimelineNode />
 
                 {/* Experience Card */}
                 <motion.div
@@ -830,21 +886,7 @@ const AchievementsSection = () => {
             ].map((ach, idx) => (
               <div key={ach.event} className="relative flex flex-col md:flex-row items-start">
                 {/* Timeline Node */}
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-0 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{
-                      backgroundColor: "#C68E17",
-                      boxShadow: "0 0 8px rgba(198,142,23,0.8)"
-                    }}
-                  />
-                </motion.div>
-
+                <TimelineNode />
                 {/* Achievement Card */}
                 <motion.div
                   initial={{ opacity: 0, x: 30 }}
@@ -1284,6 +1326,8 @@ export default function App() {
                     <motion.a
                       key={social.label}
                       href={social.href}
+                      target={social.href.startsWith('mailto:') ? undefined : "_blank"}
+                      rel={social.href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
