@@ -637,8 +637,7 @@ const ExperienceSection = () => {
 
         <div className="relative">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-4 md:left-8 top-2 bottom-0 w-[1px] bg-white/10 block" />
-          
+className="absolute left-4 md:left-8 top-2 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"          
           {/* Animated Timeline Progress */}
           <motion.div 
             className="absolute left-4 md:left-8 top-2 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"
@@ -679,14 +678,15 @@ const ExperienceSection = () => {
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-0 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 flex items-center justify-center"                >
+                  className="absolute left-4 md:left-8 top-2 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"
+                >
                   <div
-                 className="w-2 h-2 rounded-full"
-                 style={{
-                   backgroundColor: "#C68E17",
-                   boxShadow: "0 0 8px rgba(198,142,23,0.8)"
-                 }}
-                />
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: "#C68E17",
+                      boxShadow: "0 0 8px rgba(198,142,23,0.8)"
+                    }}
+                  />
                 </motion.div>
 
                 {/* Experience Card */}
@@ -769,8 +769,7 @@ className="absolute left-4 md:left-8 top-10 w-[1px] bg-gradient-to-b from-copper
             }}
           />
 
-          <div className="space-y-20 relative">
-            {[
+<div className="space-y-20 relative pt-10">            {[
               {
                 title: "1st Place",
                 event: "IEEE TEMS Hack Expertise Hackathon",
@@ -792,15 +791,15 @@ className="absolute left-4 md:left-8 top-10 w-[1px] bg-gradient-to-b from-copper
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-8 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 flex items-center justify-center"
+                  className="absolute left-4 md:left-8 top-0 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-50 -translate-x-1/2 flex items-center justify-center"
                 >
                   <div
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor: "#C68E17",
-                  boxShadow: "0 0 8px rgba(198,142,23,0.8)"
-                }}
-              />
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: "#C68E17",
+                      boxShadow: "0 0 8px rgba(198,142,23,0.8)"
+                    }}
+                  />
                 </motion.div>
 
                 {/* Achievement Card */}
@@ -1220,7 +1219,7 @@ export default function App() {
             <AchievementsSection />
 
             {/* Contact Section */}
-            <section id="contact" className="relative py-16 px-6 relative overflow-hidden">
+            <section id="contact" className="relative py-16 px-6 overflow-hidden">
               <div className="max-w-4xl mx-auto text-center">
                 <SectionHeading title="Let's Build the Future." subtitle="Contact" />
                 <motion.p
