@@ -637,11 +637,11 @@ const ExperienceSection = () => {
 
         <div className="relative">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-4 md:left-8 top-2 bottom-0 w-[1px] bg-white/10 hidden md:block" />
+          <div className="absolute left-4 md:left-8 top-2 bottom-0 w-[1px] bg-white/10 block" />
           
           {/* Animated Timeline Progress */}
           <motion.div 
-            className="absolute left-4 md:left-8 top-2 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top hidden md:block"
+            className="absolute left-4 md:left-8 top-2 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"
             style={{ 
               height: '100%',
               scaleY
@@ -679,9 +679,14 @@ const ExperienceSection = () => {
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-0 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 hidden md:flex items-center justify-center"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-copper-light animate-pulse" />
+                  className="absolute left-4 md:left-8 top-0 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 flex items-center justify-center"                >
+                  <div
+                 className="w-2 h-2 rounded-full"
+                 style={{
+                   backgroundColor: "#C68E17",
+                   boxShadow: "0 0 8px rgba(198,142,23,0.8)"
+                 }}
+                />
                 </motion.div>
 
                 {/* Experience Card */}
@@ -693,8 +698,7 @@ const ExperienceSection = () => {
                   className="w-full md:ml-20 group relative"
                 >
                   {/* Radial Light Background */}
-                  <div className="absolute inset-0 bg-radial-gradient from-copper-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                  
+<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(198,142,23,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />                  
                   <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-8 hover:border-copper-light/30 transition-all duration-500 shadow-2xl">
                     {/* Top Accent Line */}
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-copper-light/40 to-transparent" />
@@ -756,12 +760,10 @@ const AchievementsSection = () => {
 
         <div className="relative">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-4 md:left-8 top-10 bottom-0 w-[1px] bg-white/10 hidden md:block" />
-          
+        <div className="absolute left-4 md:left-8 top-10 bottom-0 w-[1px] bg-white/10 block" />          
           {/* Animated Timeline Progress */}
           <motion.div 
-            className="absolute left-4 md:left-8 top-10 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top hidden md:block"
-            style={{ 
+className="absolute left-4 md:left-8 top-10 w-[1px] bg-gradient-to-b from-copper-light via-copper-dark to-transparent origin-top block"            style={{ 
               height: '100%',
               scaleY
             }}
@@ -790,9 +792,15 @@ const AchievementsSection = () => {
                   initial={{ scale: 0, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
-                  className="absolute left-4 md:left-8 top-8 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 hidden md:flex items-center justify-center"
+                  className="absolute left-4 md:left-8 top-8 w-4 h-4 rounded-full bg-elite-black border-2 border-copper-light z-10 -translate-x-1/2 flex items-center justify-center"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-copper-light" />
+                  <div
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor: "#C68E17",
+                  boxShadow: "0 0 8px rgba(198,142,23,0.8)"
+                }}
+              />
                 </motion.div>
 
                 {/* Achievement Card */}
