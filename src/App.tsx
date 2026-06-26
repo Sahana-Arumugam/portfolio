@@ -598,7 +598,7 @@ const Navbar = () => {
   const socialIcons = [
     { icon: Github, href: 'https://github.com/Sahana-Arumugam', label: 'GitHub' },
     { icon: Linkedin, href: 'https://www.linkedin.com/in/sahanaarumugam', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://www.instagram.com/idkkkk___man/', label: 'Instagram' },
+    { icon: Instagram, href: 'https://www.instagram.com/getmericee/', label: 'Instagram' },
     { icon: Mail, href: 'mailto:sahanaarums16@gmail.com', label: 'Email' }
   ];
 
@@ -1435,81 +1435,94 @@ export default function App() {
                 <SectionHeading title="Technical Arsenal." subtitle="Expertise" />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-                  {[
-                    { 
-                      title: "Languages", 
-                      techs: [
-                        { name: "Python", slug: "python" },
-                        { name: "C", slug: "c" },
-                        { name: "C++", slug: "cplusplus" },
-                        { name: "Java", slug: "java" },
-                        { name: "R", slug: "r" },
-                        { name: "JavaScript", slug: "javascript" },
-                        { name: "TypeScript", slug: "typescript" }
-                      ]
-                    },
-                    { 
-                      title: "Frontend", 
-                      techs: [
-                        { name: "HTML5", slug: "html5" },
-                        { name: "CSS3", slug: "css3" },
-                        { name: "React", slug: "react" },
-                        { name: "Next.js", slug: "nextdotjs" },
-                        { name: "Tailwind", slug: "tailwindcss" },
-                        { name: "Figma", slug: "figma" },
-                        { name: "Canva", slug: "canva" }
-                      ]
-                    },
-                    { 
-                      title: "Backend", 
-                      techs: [
-                        { name: "Node.js", slug: "nodedotjs" },
-                        { name: "Express", slug: "express" },
-                        { name: "Next.js", slug: "nextdotjs" }
-                      ]
-                    },
-                    { 
-                      title: "Databases", 
-                      techs: [
-                        { name: "MongoDB", slug: "mongodb" },
-                        { name: "PostgreSQL", slug: "postgresql" },
-                        { name: "Oracle", slug: "oracle" },
-                        { name: "Firebase", slug: "firebase" },
-                        { name: "Supabase", slug: "supabase" }
-                      ]
-                    },
-                    { 
-                      title: "Cloud & DevOps", 
-                      techs: [
-                        { name: "AWS", slug: "amazonwebservices" },
-                        { name: "Azure", slug: "microsoftazure" },
-                        { name: "Docker", slug: "docker" },
-                        { name: "Vercel", slug: "vercel" },
-                        { name: "Render", slug: "render" },
-                        { name: "GitHub", slug: "github" },
-                        { name: "SaltStack", slug: "saltstack" }
-                      ]
-                    },
-                    { 
-                      title: "Machine Learning", 
-                      techs: [
-                        { name: "TensorFlow", slug: "tensorflow" },
-                        { name: "PyTorch", slug: "pytorch" },
-                        { name: "Scikit-Learn", slug: "scikitlearn" },
-                        { name: "NumPy", slug: "numpy" },
-                        { name: "Pandas", slug: "pandas" },
-                        { name: "Matplotlib", slug: "matplotlib" },
-                        { name: "Seaborn", slug: "seaborn" }
-                      ]
-                    },
-                    { 
-                      title: "Quality Assurance", 
-                      techs: [
-                        { name: "Mocha", slug: "mocha" },
-                        { name: "Chai", slug: "chai" },
-                        { name: "Supertest", slug: "supertest" }
-                      ]
-                    }
+  {[
+    {
+      title: "Languages",
+      techs: [
+        { name: "Python", slug: "python" },
+        { name: "C", slug: "c" },
+        { name: "C++", slug: "cplusplus" },
+        { name: "Java", slug: "java" },
+        { name: "JavaScript", slug: "javascript" },
+        { name: "TypeScript", slug: "typescript" },
+        { name: "R", slug: "r" }
+      ]
+    },
+
+    {
+      title: "Frontend",
+      techs: [
+        { name: "HTML5", slug: "html5" },
+        { name: "CSS3", slug: "css3" },
+        { name: "React", slug: "react" },
+        { name: "Next.js", slug: "nextdotjs" },
+        { name: "Tailwind CSS", slug: "tailwindcss" },
+        { name: "Figma", slug: "figma" },
+        { name: "Canva", slug: "canva" }
+      ]
+    },
+
+    {
+      title: "Backend",
+      techs: [
+        { name: "Node.js", slug: "nodedotjs" },
+        { name: "Express.js", slug: "express" },
+        { name: "REST APIs", slug: "fastapi" },
+        { name: "Next.js", slug: "nextdotjs" }
+      ]
+    },
+
+    {
+      title: "Databases",
+      techs: [
+        { name: "MongoDB", slug: "mongodb" },
+        { name: "SQL", slug: "mysql" },
+        { name: "Oracle", slug: "oracle" },
+        { name: "Firebase", slug: "firebase" },
+        { name: "Supabase", slug: "supabase" }
+      ]
+    },
+
+    {
+      title: "Cloud & DevOps",
+      techs: [
+        { name: "AWS", slug: "amazonwebservices" },
+        { name: "Azure", slug: "microsoftazure" },
+        { name: "Docker", slug: "docker" },
+        { name: "Jenkins", slug: "jenkins" },
+        { name: "GitHub", slug: "github" },
+        { name: "GitHub Actions", slug: "githubactions" },
+        { name: "Vercel", slug: "vercel" },
+        { name: "Render", slug: "render" }
+      ]
+    },
+
+    {
+      title: "Machine Learning & AI",
+      techs: [
+        { name: "TensorFlow", slug: "tensorflow" },
+        { name: "PyTorch", slug: "pytorch" },
+        { name: "Scikit-learn", slug: "scikitlearn" },
+        { name: "XGBoost", slug: "xgboost" },
+        { name: "Bayesian Optimization", slug: "python" },
+        { name: "NumPy", slug: "numpy" },
+        { name: "Pandas", slug: "pandas" },
+        { name: "EDA", slug: "jupyter" },
+        { name: "Matplotlib", slug: "matplotlib" },
+        { name: "Seaborn", slug: "seaborn" }
+      ]
+    },
+
+    {
+      title: "Testing & QA",
+      techs: [
+        { name: "JUnit", slug: "junit" },
+        { name: "Selenium", slug: "selenium" },
+        { name: "Mocha", slug: "mocha" },
+        { name: "Chai", slug: "chai" },
+        { name: "Supertest", slug: "supertest" }
+      ]
+    }
                   ].map((category, idx) => (
                     <motion.div 
                       key={category.title}
@@ -1640,7 +1653,7 @@ export default function App() {
                   viewport={{ once: true }}
                   className="text-xl text-white/60 mb-12 font-light"
                 >
-                  Currently seeking internship opportunities and collaborations in AI/ML and Software Engineering.
+                  Currently seeking internship opportunities and collaborations in Software Engineering.
                 </motion.p>
                 
                 <div className="flex flex-wrap justify-center gap-8">
