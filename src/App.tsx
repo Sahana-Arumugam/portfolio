@@ -1,11 +1,51 @@
-import aether_pic from "./assets/images/aether_pic.jpg";
-import amazon_pic from "./assets/images/amazon_pic.png";
-import carboloom_pic from "./assets/images/carboloom_pic.png";
-import cert_1 from "./assets/images/cert_1.jpeg";
-import expenzo_pic from "./assets/images/expenzo_pic.jpg";
 import ieee_its_logo from "./assets/images/ieee_its_logo.jpeg";
 import lambda_logo from "./assets/images/lambda_logo.jpg";
-import { useState, useEffect, useRef, ReactNode } from 'react';
+
+import aether_2 from "./assets/images/aether_2.jpg";
+import aether_3 from "./assets/images/aether_3.jpg";
+import aether_1 from "./assets/images/aether_pic.jpg";
+
+import amazon_2 from "./assets/images/amazon_2.png";
+import amazon_3 from "./assets/images/amazon_3.png";
+import amazon_1 from "./assets/images/amazon_pic.png";
+
+import carboloom_2 from "./assets/images/carboloom_2.jpg";
+import carboloom_3 from "./assets/images/carboloom_3.jpg";
+import carboloom_1 from "./assets/images/carboloom_pic.png";
+
+import acad_1 from "./assets/images/acad_burnout_1.png";
+import acad_2 from "./assets/images/acad_burnout_2.png";
+import acad_3 from "./assets/images/acad_burnout_3.png";
+
+
+import expenzo_2 from "./assets/images/expenzo_2.jpg";
+import expenzo_1 from "./assets/images/expenzo_pic.jpg";
+
+import glassforge_1 from "./assets/images/glassforge_1.jpg";
+import glassforge_2 from "./assets/images/glassforge_2.jpg";
+import glassforge_3 from "./assets/images/glassforge_3.jpg";
+
+
+
+import movitex_1 from "./assets/images/movitex_1.png";
+import movitex_2 from "./assets/images/movitex_2.png";
+import movitex_3 from "./assets/images/movitex_3.png";
+
+import opt_1 from "./assets/images/opt_1.jpg";
+import opt_2 from "./assets/images/opt_2.jpg";
+
+import ieeeits_1 from "./assets/images/ieeeits_1.jpg";
+import ieeeits_2 from "./assets/images/ieeeits_2.jpeg";
+import ieeeits_222 from "./assets/images/ieeeits_222.jpg";
+
+import svce_hack_1 from "./assets/images/svce_hack_1.jpg";
+import svce_hack_2 from "./assets/images/svce_hack_2.jpg";
+import svce_hack_3 from "./assets/images/svce_hack_3.png";
+
+import ieeetems_hack from "./assets/images/ieeetems_hack_1.jpg";
+import cert_1 from "./assets/images/cert_1.jpeg";
+
+import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform, useMotionValue, useVelocity } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -22,6 +62,7 @@ import {
   Linkedin, 
   Mail,
   Instagram,
+  ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 
@@ -790,9 +831,10 @@ const ExperienceSection = () => {
   company: "Team Lambda (Official SELECT Team)",
   period: "DST-funded Government of India Project",
   points: [
-    "Developing and optimizing Machine Learning and Deep Learning models using Python, TensorFlow, PyTorch, and Scikit-learn",
-    "Contributing to an autonomous solar panel inspection and maintenance robot project",
-    "Performing data preprocessing, feature engineering, and model pipeline optimization using NumPy and Pandas"
+    "Engineered concurrent ML/DL pipelines using TensorFlow, PyTorch, and Scikit-learn across 20+ weather and operational datasets (100K+ rows), reducing model iteration time by approximately 40%.",
+    "Designed a distributed edge-processing system using Raspberry Pi nodes for real-time monitoring of environmental conditions and solar panel telemetry, achieving less than 50ms processing latency.",
+    "Developed 3+ predictive models leveraging weather forecasts, dust accumulation patterns, and power-generation metrics, achieving 88–92% prediction accuracy for cleaning schedule optimization.",
+    "Delivered end-to-end ML solutions for DST-funded research, improving cleaning efficiency by approximately 25%, reducing unnecessary cleaning cycles by 30%, and supporting large-scale performance evaluation."
   ],
   logo: lambda_logo
 },
@@ -802,8 +844,9 @@ const ExperienceSection = () => {
   period: "Technical Chapter at VIT Vellore",
   points: [
     "Led development and enhancement of the society’s official website",
-    "Organized and executed technical events including coding contests, ML workshops, and bootcamps",
-    "Hosted hackathons, mentored participants, and supported problem statement design and evaluation"
+    "Hosted hackathons, mentored participants, and supported problem statement design and evaluation",
+     "Implemented 8+ features using React and Node.js applying software design and reliability engineering principles, reducing usability issues by approximately 60% across 500+ users.",
+     "Mentored 50+ participants in data structures, algorithms, and system design across ML workshops and coding contests."
   ],
   logo: ieee_its_logo
 }
@@ -865,6 +908,87 @@ const ExperienceSection = () => {
   );
 };
 
+interface ImageStackProps {
+  images: string[];
+  event: string;
+}
+
+const ImageStack = ({ images, event }: ImageStackProps) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const getStyles = (positionIndex: number) => {
+    if (positionIndex === 0) {
+      return {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 1,
+        opacity: 1
+      };
+    }
+    
+    // For overlapping cards behind
+    const isOdd = positionIndex % 2 !== 0;
+    const directionMultiplier = isOdd ? 1 : -1;
+    const baseOffset = 18;
+    const hoverOffset = 36;
+    const baseRotate = 3;
+    const hoverRotate = 6;
+
+    return {
+      x: directionMultiplier * (isHovered ? hoverOffset : baseOffset),
+      y: 4, // slight vertical shift downward
+      rotate: directionMultiplier * (isHovered ? hoverRotate : baseRotate),
+      scale: 1 - positionIndex * 0.05,
+      opacity: 1 - positionIndex * 0.15
+    };
+  };
+
+  return (
+    <div
+      className="relative w-full h-full min-h-[320px] sm:min-h-[360px] flex items-center justify-center"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {images.map((src, i) => {
+        const positionIndex = (i - activeIndex + images.length) % images.length;
+        const isActive = positionIndex === 0;
+
+        return (
+          <motion.button
+            key={src}
+            type="button"
+            onClick={() => setActiveIndex((prev) => (prev + 1) % images.length)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setActiveIndex((prev) => (prev + 1) % images.length);
+              }
+            }}
+            aria-label={`View image ${i + 1} of ${event}`}
+            style={{ zIndex: 10 - positionIndex }}
+            animate={getStyles(positionIndex)}
+            transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
+            className={`absolute w-[80%] sm:w-[75%] lg:w-[80%] aspect-[4/3] bg-[#0d0d0f] p-2.5 pb-8 sm:p-3 sm:pb-10 rounded-lg shadow-2xl transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-copper-light/80 cursor-pointer ${
+              isActive ? "border border-copper-light/40" : "border border-white/5 hover:border-white/20"
+            }`}
+          >
+            <div className="w-full h-full overflow-hidden rounded bg-black/40">
+              <img
+                src={src}
+                alt={`${event} screenshot ${i + 1}`}
+                className="w-full h-full object-cover select-none"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          </motion.button>
+        );
+      })}
+    </div>
+  );
+};
+
 const AchievementsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -892,22 +1016,34 @@ const AchievementsSection = () => {
       height: '100%',
       scaleY
     }}
-  />
-
-<div className="space-y-20 relative pt-10">            {[
+  /><div className="space-y-20 relative pt-10">            
+  {[
               {
-                title: "1st Place",
+                title: "1ˢᵗ Place",
+                event: "Hack'HER'Thon 2026 National Level Hackathon",
+                desc: "Designed and built an ML-driven predictive maintenance system integrating RAG-based LLMs and blockchain to deliver explainable, tamper-proof diagnostics, enabling transparent decision-making and securing recognition as the best solution among 100+ teams nationwide.",
+                images: [svce_hack_1, svce_hack_2,svce_hack_3],
+                icon: Trophy
+              },
+              {
+                title: "1ˢᵗ Place",
                 event: "IEEE TEMS Hack Expertise Hackathon",
                 desc: "Won the sustainability track at an inter-college hackathon with AETHER, an interactive experience that transformed complex environmental data into an intuitive and engaging platform. The project stood out for blending impactful design with purpose-driven innovation.",
-                image: cert_1,
+                images: [ieeetems_hack, cert_1],
+                icon: Trophy
+              },
+              {
+                title: "Track Winner",
+                event: "IEEE ITS Innovate for Impact Hackathon",
+                desc: "Built a real-time crowd management system with ML-driven predictive routing for a campus population exceeding 20,000, processing live congestion data to optimize pedestrian flow, reduce bottlenecks, generate smart route recommendations with real-time alerts and analytics.",
+                images: [ieeeits_1, ieeeits_222],
                 icon: Trophy
               },
               {
                 title: "Proficiency Award",
                 event: "Artificial Intelligence Excellence",
-                desc: "Recognized for outstanding academic and practical performance in Artificial Intelligence and Machine Learning domains.", 
+                desc: "Recognized during high school for exceptional academic excellence and hands-on achievements in Artificial Intelligence and Machine Learning, demonstrating strong technical aptitude through innovative AI projects, practical problem-solving, and consistent outstanding performance in academics, research, and technology-driven initiatives.", 
                 icon: Trophy
-                
               }
             ].map((ach, idx) => (
               <div key={ach.event} className="relative flex flex-col md:flex-row items-start">
@@ -923,25 +1059,19 @@ const AchievementsSection = () => {
                 >
                   <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-0 hover:border-copper-light/30 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col lg:flex-row">
                     {/* Image Section */}
-                    {ach.image && (
-                      <div className="w-full lg:w-2/5 h-48 sm:h-64 lg:h-auto overflow-hidden relative">
-                        <motion.img 
-                          src={ach.image} 
-                          alt={ach.event} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-elite-black via-transparent to-transparent opacity-60" />
+                    {ach.images && ach.images.length > 0 && (
+                      <div className="w-full lg:w-[45%] min-h-[360px] overflow-hidden relative bg-black/25 flex items-center justify-center p-6 border-b lg:border-b-0 lg:border-r border-white/5">
+                        <ImageStack images={ach.images} event={ach.event} />
                         
                         {/* Floating Icon */}
-                        <div className="absolute top-4 left-4 p-3 bg-elite-black/80 border border-copper-light/30 backdrop-blur-md">
+                        <div className="absolute top-4 left-4 p-3 bg-elite-black/80 border border-copper-light/30 backdrop-blur-md z-20">
                           <ach.icon className="w-6 h-6 text-copper-light" />
                         </div>
                       </div>
                     )}
 
                     {/* Content Section */}
-                    <div className={`${ach.image ? 'flex-1' : 'w-full'} p-4 sm:p-8 relative`}>
+                    <div className={`${ach.images && ach.images.length > 0 ? 'flex-1' : 'w-full'} p-4 sm:p-8 relative`}>
                       {/* Top Accent Line */}
                       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-copper-light/40 via-transparent to-transparent" />
                       
@@ -973,6 +1103,183 @@ const AchievementsSection = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+interface Project {
+  title: string;
+  desc: string;
+  tags: string[];
+  images: string[];
+  github: string;
+  live: string;
+}
+
+const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: React.Key }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? "100%" : "-100%",
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: { duration: 0.2 }
+      }
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? "100%" : "-100%",
+      opacity: 0,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: { duration: 0.2 }
+      }
+    })
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDirection(1);
+    setCurrentIdx((prev) => (prev + 1) % project.images.length);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDirection(-1);
+    setCurrentIdx((prev) => (prev - 1 + project.images.length) % project.images.length);
+  };
+
+  const handleDotClick = (index: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDirection(index > currentIdx ? 1 : -1);
+    setCurrentIdx(index);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: idx * 0.1, duration: 0.8 }}
+      whileHover={{ y: -8 }}
+      className="group relative bg-elite-dark/20 backdrop-blur-md border border-white/5 hover:border-copper-light/30 overflow-hidden rounded-lg flex flex-col justify-between transition-colors duration-500 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+    >
+      <div>
+        {/* Carousel Image Container */}
+        <div className="aspect-video w-full overflow-hidden relative bg-black/40">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.img
+              key={currentIdx}
+              src={project.images[currentIdx]}
+              alt={`${project.title} screenshot ${currentIdx + 1}`}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              referrerPolicy="no-referrer"
+            />
+          </AnimatePresence>
+
+          {/* Left Arrow Button */}
+          {project.images.length > 1 && (
+            <button
+              onClick={handlePrev}
+              type="button"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-0 group-hover:opacity-100"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Right Arrow Button */}
+          {project.images.length > 1 && (
+            <button
+              onClick={handleNext}
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-0 group-hover:opacity-100"
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Navigation Dots */}
+          {project.images.length > 1 && (
+            <div className="absolute bottom-3 left-0 right-0 z-10 flex justify-center gap-1.5">
+              {project.images.map((_, dotIdx) => (
+                <button
+                  key={dotIdx}
+                  type="button"
+                  onClick={(e) => handleDotClick(dotIdx, e)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    dotIdx === currentIdx
+                      ? "bg-copper-light w-4"
+                      : "bg-white/30 hover:bg-white/60"
+                  }`}
+                  aria-label={`Go to slide ${dotIdx + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Card Info */}
+        <div className="p-8">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-2xl font-serif text-white tracking-wide">{project.title}</h3>
+            <div className="flex gap-4">
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5"
+                title="View Repository"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+              {project.live && project.live !== "#" && (
+                <a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5"
+                  title="Live Demo"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+              )}
+            </div>
+          </div>
+          <p className="text-white/50 mb-6 font-light leading-relaxed text-sm">{project.desc}</p>
+        </div>
+      </div>
+
+      {/* Tags & Border Indicator */}
+      <div className="px-8 pb-8 pt-0">
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[10px] uppercase tracking-widest text-copper-light/60 bg-copper-light/[0.04] border border-copper-light/10 px-2.5 py-1 rounded"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-copper-light scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
+      </div>
+    </motion.div>
   );
 };
 
@@ -1249,77 +1556,71 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   {[
                     {
+                      title: "GlassForge Sentinel",
+                      desc: "Distributed predictive maintenance platform using ML, RAG-powered LLMs, blockchain smart contracts, and distributed pipelines for real-time industrial telemetry processing.",
+                      tags: ["Python", "RAG", "Blockchain","Scikit-Learn","Next.js"],
+                      images: [glassforge_1, glassforge_2, glassforge_3],
+                      github: "https://github.com/Sahana-Arumugam/roller_failure_pred",
+                      live: "#"
+                    },
+                    {
+                      title: "MoVITex",
+                      desc: "Developed an AI-powered campus crowd intelligence platform enabling real-time congestion prediction, smart alerting, and analytics across multiple campus zones using event-driven processing.",
+                      tags: ["React", "Node.js", "Python", "FastAPI", "Scikit-Learn"],
+                      images: [movitex_2,movitex_1,movitex_3],
+                      github: "https://github.com/Sahana-Arumugam/movitex",
+                      live: "#"
+                    },
+                    {
+                      title: "Bayesian Compiler Optimization Engine",
+                      desc: "Engineered a machine learning model benchmarking pipeline leveraging Bayesian Optimization, hyperparameter tuning, cross-validation, and evaluation metrics to identify the optimal predictive model.",
+                      tags: [ "Python", "Scikit-learn", "XGBoost", "GCC", "LLVM"],
+                      images: [opt_1,opt_2],
+                      github: "https://github.com/Sahana-Arumugam/Compiler-optimization-engine",
+                      live: "#"
+                    },
+                    {
                       title: "CarboLoom",
-                      desc: "TypeScript-based application to calculate and track daily carbon footprint using interactive dashboards, real-time updates, and category-wise emission breakdowns to promote sustainable user behavior.",
-                      tags: ["React", "Express.js", "MongoDB"],
-                      image: carboloom_pic,
+                      desc: "Developed a carbon footprint tracking platform featuring real-time emissions monitoring, interactive analytics dashboards, and data-driven insights to promote sustainable decision-making.",
+                      tags: ["React", "Express.js", "supabase", "Tailwind CSS"],
+                      images: [carboloom_1, carboloom_2, carboloom_3],
                       github: "https://github.com/Sahana-Arumugam/carboloom",
                       live: "https://carboloomapp.vercel.app/"
                     },
                     {
-                      title: "AETHER",
-                      desc: "UI/UX-focused front-end interface built using TypeScript and CSS with smooth animations, responsive layouts, and an immersive, visually engaging user experience.",
-                      tags: ["Framer Motion", "Figma", "TypeSript"],
-                      image: aether_pic,
-                      github: "https://github.com/Sahana-Arumugam/AETHER",
-                      live: "#"
-                    },
-                    {
                       title: "ExpenZo",
-                      desc: "Personal finance tracker developed using TypeScript and Vite with secure CRUD operations, expense categorization, analytics-ready data storage, and deployment on AWS (S3, EC2).",
-                      tags: ["S3","EC2", "TypeSript", "Tailwind CSS", "MongoDB"],
-                      image: expenzo_pic,
+                      desc: "Engineered a full-stack personal finance tracker with secure CRUD operations, AWS cloud deployment, interactive analytics dashboards, and responsive user interface for expense management.",
+                      tags: ["Vite", "React.js","Express.js", "S3", "EC2", "Tailwind CSS", "MongoDB"],
+                      images: [expenzo_1, expenzo_2],
                       github: "https://github.com/Sahana-Arumugam/expenzo-fullstack",
                       live: "https://expenzo-mauve.vercel.app/"
                     },
                     {
+                      title: "Academic Burnout Companion",
+                      desc: "Developed a cloud-native burnout detection platform integrating SaltStack, React, Flask, and automated remediation workflows for proactive system health monitoring and issue resolution.",
+                      tags: ["SaltStack", "React", "Flask", "Python"],
+                      images: [acad_1, acad_2, acad_3],
+                      github: "https://github.com/Sahana-Arumugam/academic-burnout-companion",
+                      live: "#"
+                    },
+                    {
+                      title: "Aether",
+                      desc: "Developed a goods exchange platform featuring an antique-inspired user interface, responsive design, secure listings, and intuitive workflows to encourage sustainable item reuse.",
+                      tags: ["Framer Motion", "TypeScript", "Tailwind CSS", "Vite"],
+                      images: [aether_1, aether_2, aether_3],
+                      github: "https://github.com/Sahana-Arumugam/AETHER",
+                      live: "#"
+                    },
+                    {
                       title: "Amazon Clone",
-                      desc: "E-commerce platform built with React and Express featuring Firebase authentication, Stripe payment integration, dynamic product management, and end-to-end purchase workflows.",
-                      tags: ["Javascript", "Firebase", "React","Stripe"],
-                      image: amazon_pic,
+                      desc: "Developed a full-stack e-commerce platform featuring Firebase authentication, Stripe payment integration, secure order management, and a responsive shopping experience.",
+                      tags: ["React", "Firebase", "Stripe", "Express.js"],
+                      images: [amazon_1, amazon_2, amazon_3],
                       github: "https://github.com/Sahana-Arumugam/amazon-clone",
                       live: "https://project-f2af1.web.app/"
                     }
                   ].map((project, idx) => (
-                    <motion.div
-                      key={project.title}
-                      initial={{ opacity: 0, y: 40 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1, duration: 0.8 }}
-                      className="group relative bg-elite-dark/20 border border-white/5 overflow-hidden interactive"
-                    >
-                      <div className="aspect-video overflow-hidden">
-                        <img 
-                          src={project.image} 
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                      <div className="p-8">
-                        <div className="flex justify-between items-start mb-4">
-                          <h3 className="text-2xl font-serif text-white">{project.title}</h3>
-                          <div className="flex gap-4">
-                            <a href={project.github} className="text-white/40 hover:text-copper-light transition-colors" title="View Repository">
-                              <Github className="w-5 h-5" />
-                            </a>
-                            <a href={project.live} className="text-white/40 hover:text-copper-light transition-colors" title="Live Demo">
-                              <ExternalLink className="w-5 h-5" />
-                            </a>
-                          </div>
-                        </div>
-                        <p className="text-white/50 mb-6 font-light">{project.desc}</p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.tags.map(tag => (
-                            <span key={tag} className="text-[10px] uppercase tracking-widest text-copper-light/60">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-copper-light scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
-                    </motion.div>
+                    <ProjectCard key={project.title} project={project} idx={idx} />
                   ))}
                 </div>
               </div>
@@ -1347,7 +1648,7 @@ export default function App() {
                     { icon: Mail, label: "Email", href: "mailto:sahanaarums16@gmail.com" },
                     { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/sahanaarumugam/" },
                     { icon: Github, label: "GitHub", href: "https://github.com/Sahana-Arumugam" },
-                    { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/idkkkk___man/" }
+                    { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/getmericee/" }
                   ].map((social, idx) => (
                     <motion.a
                       key={social.label}
