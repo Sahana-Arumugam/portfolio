@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 @import "tailwindcss";
-/* Hide default cursor everywhere */
-* {
-  cursor: none;
+/* Hide default cursor everywhere only for mouse users */
+@media (pointer: fine) {
+  * {
+    cursor: none;
+  }
 }
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -19,7 +21,11 @@
   body {
     @apply bg-elite-black text-white/90 selection:bg-copper-light selection:text-black;
     font-family: var(--font-sans);
-    cursor: none;
+  }
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -80,4 +86,20 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
+}
+
+/* Expanded touch target for accessibility */
+.touch-target-expansion {
+  position: relative;
+}
+.touch-target-expansion::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
 }

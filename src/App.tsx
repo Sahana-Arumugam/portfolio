@@ -46,7 +46,7 @@ import ieeetems_hack from "./assets/images/ieeetems_hack_1.jpg";
 import cert_1 from "./assets/images/cert_1.jpeg";
 
 import React, { useState, useEffect, useRef, ReactNode } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring, useTransform, useMotionValue, useVelocity } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useSpring, useTransform, useMotionValue, useVelocity, useReducedMotion } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { 
@@ -90,7 +90,7 @@ const ArchitecturalButton = ({
       initial="initial"
       whileHover="hover"
       className={cn(
-        "group relative px-10 h-16 flex items-center justify-center overflow-hidden transition-all duration-700",
+        "group relative px-6 sm:px-10 h-16 flex items-center justify-center overflow-hidden transition-all duration-700",
         variant === 'minimal' ? "bg-white/[0.02]" : "bg-copper-light/[0.03]",
         className
       )}
@@ -162,7 +162,7 @@ const ResumeButton = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.7, duration: 1 }}
       whileHover="hover"
-      className="group relative px-10 py-4 flex items-center justify-center gap-3 overflow-hidden transition-all duration-500 rounded-[32px]"
+      className="group relative px-6 sm:px-10 py-4 flex items-center justify-center gap-3 overflow-hidden transition-all duration-500 rounded-[32px]"
     >
       {/* Brighter Outline */}
       <div className="absolute inset-0 border border-copper-light/40 rounded-[32px] group-hover:border-copper-light/60 transition-colors duration-500" />
@@ -204,7 +204,7 @@ const TechnologyIcon = ({ name, slug, delay }: { name: string, slug: string, del
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="group flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-400 hover:bg-white/[0.03]"
+      className="group flex flex-col items-center gap-2 sm:gap-3 p-2 xs:p-3 sm:p-4 rounded-xl transition-all duration-400 hover:bg-white/[0.03]"
     >
       <div className="relative w-10 h-10 flex items-center justify-center">
         <img 
@@ -253,21 +253,15 @@ const CustomCursor = () => {
   const trail3Y = useSpring(mouseY, { damping: 55, stiffness: 80, mass: 1.5 });
 
   useEffect(() => {
-    // Detect touch device
-    const detectTouch = () => {
-      const hasTouch = () => {
-        return (
-          (typeof window !== 'undefined' &&
-            ('ontouchstart' in window ||
-              (navigator.maxTouchPoints !== undefined &&
-                navigator.maxTouchPoints > 0))) ||
-          false
-        );
-      };
-      setIsTouchDevice(hasTouch());
+    const mediaQuery = window.matchMedia('(pointer: fine)');
+    const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      const isFinePointer = e.matches;
+      setIsTouchDevice(!isFinePointer);
+      setCursorVisible(isFinePointer);
     };
 
-    detectTouch();
+    handleMediaChange(mediaQuery);
+    mediaQuery.addEventListener('change', handleMediaChange);
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -276,6 +270,9 @@ const CustomCursor = () => {
       const target = e.target as HTMLElement;
       const isInteractive = target.closest('button, a, .interactive');
       setIsHovering(!!isInteractive);
+      if (mediaQuery.matches) {
+        setCursorVisible(true);
+      }
     };
 
     const handleMouseLeave = () => {
@@ -283,7 +280,7 @@ const CustomCursor = () => {
     };
 
     const handleMouseEnter = () => {
-      setCursorVisible(!isTouchDevice);
+      setCursorVisible(mediaQuery.matches);
     };
 
     const handleBlur = () => {
@@ -291,24 +288,22 @@ const CustomCursor = () => {
     };
 
     const handleFocus = () => {
-      setCursorVisible(!isTouchDevice);
+      setCursorVisible(mediaQuery.matches);
     };
 
     const handleTouchStart = () => {
       setCursorVisible(false);
     };
 
-    if (!isTouchDevice) {
-      window.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseleave', handleMouseLeave);
-      document.addEventListener('mouseenter', handleMouseEnter);
-      window.addEventListener('blur', handleBlur);
-      window.addEventListener('focus', handleFocus);
-    }
-    
-    document.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
 
     return () => {
+      mediaQuery.removeEventListener('change', handleMediaChange);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
@@ -316,7 +311,7 @@ const CustomCursor = () => {
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('touchstart', handleTouchStart);
     };
-  }, [mouseX, mouseY, isTouchDevice]);
+  }, [mouseX, mouseY]);
 
   // Velocity-based effects
   const speed = useTransform([velocityX, velocityY], ([vx, vy]) =>
@@ -648,15 +643,17 @@ const Navbar = () => {
   {/* Mobile Hamburger */}
   <button 
     onClick={() => setIsOpen(!isOpen)}
-    className="md:hidden flex flex-col gap-1.5"
+    className="md:hidden flex flex-col gap-1.5 z-50 relative p-3 -mr-3 cursor-pointer touch-target-expansion"
+    aria-label="Toggle Menu"
+    id="mobile-menu-toggle"
   >
-    <span className="w-6 h-[1px] bg-white transition-all" />
-    <span className="w-6 h-[1px] bg-white transition-all" />
-    <span className="w-6 h-[1px] bg-white transition-all" />
+    <span className={cn("w-6 h-[1px] bg-white transition-all duration-300", isOpen && "rotate-45 translate-y-[7px]")} />
+    <span className={cn("w-6 h-[1px] bg-white transition-all duration-300", isOpen && "opacity-0")} />
+    <span className={cn("w-6 h-[1px] bg-white transition-all duration-300", isOpen && "-rotate-45 -translate-y-[7px]")} />
   </button>
       </div>
     </motion.nav>
-
+ 
     <AnimatePresence>
       {isOpen && (
     <motion.div
@@ -664,14 +661,14 @@ const Navbar = () => {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 right-0 h-screen w-full bg-elite-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-10"
+      className="fixed inset-0 bg-elite-black/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 overflow-y-auto py-20"
     >
       {navItems.map((item) => (
         <a
           key={item.name}
           href={item.href}
           onClick={() => setIsOpen(false)}
-          className="text-xl uppercase tracking-[0.4em] text-white hover:text-copper-light transition-colors"
+          className="text-xl uppercase tracking-[0.4em] text-white hover:text-copper-light transition-colors cursor-pointer"
         >
           {item.name}
         </a>
@@ -783,7 +780,7 @@ const SectionHeading = ({ title, subtitle }: { title: string, subtitle?: string 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="text-4xl md:text-6xl font-serif text-white"
+      className="text-3xl xs:text-4xl md:text-6xl font-serif text-white"
     >
       {title}
     </motion.h2>
@@ -851,7 +848,7 @@ const ExperienceSection = () => {
   logo: ieee_its_logo
 }
             ].map((exp, idx) => (
-              <div key={exp.company} className="relative flex flex-col md:flex-row items-start">
+              <div key={exp.company} className="relative flex flex-col md:flex-row items-start pl-10 md:pl-20">
                 {/* Timeline Node */}
                 <TimelineNode />
 
@@ -861,7 +858,7 @@ const ExperienceSection = () => {
                   whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="w-full ml-16 md:ml-20 group relative"
+                  className="w-full group relative"
                 >
                   {/* Radial Light Background */}
 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(198,142,23,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />                  
@@ -916,6 +913,80 @@ interface ImageStackProps {
 const ImageStack = ({ images, event }: ImageStackProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (images.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      if (!document.hidden) {
+        setActiveIndex((prev) => (prev + 1) % images.length);
+      }
+    }, 3500);
+  };
+
+  const stopAutoplay = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startAutoplay();
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      stopAutoplay();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [images.length]);
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % images.length);
+    startAutoplay();
+  };
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+    startAutoplay();
+  };
+
+  const handleDotClick = (index: number) => {
+    setActiveIndex(index);
+    startAutoplay();
+  };
+
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const difference = touchStartX.current - touchEndX.current;
+    const swipeThreshold = 40;
+    if (difference > swipeThreshold) {
+      handleNext();
+    } else if (difference < -swipeThreshold) {
+      handlePrev();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   const getStyles = (positionIndex: number) => {
     if (positionIndex === 0) {
@@ -925,6 +996,16 @@ const ImageStack = ({ images, event }: ImageStackProps) => {
         rotate: 0,
         scale: 1,
         opacity: 1
+      };
+    }
+
+    if (shouldReduceMotion) {
+      return {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 1 - positionIndex * 0.05,
+        opacity: 1 - positionIndex * 0.15
       };
     }
     
@@ -947,44 +1028,69 @@ const ImageStack = ({ images, event }: ImageStackProps) => {
 
   return (
     <div
-      className="relative w-full h-full min-h-[320px] sm:min-h-[360px] flex items-center justify-center"
+      className="relative w-full h-full min-h-[220px] sm:min-h-[300px] lg:min-h-[340px] flex flex-col items-center justify-center gap-4"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      {images.map((src, i) => {
-        const positionIndex = (i - activeIndex + images.length) % images.length;
-        const isActive = positionIndex === 0;
+      <div className="relative w-full flex-1 flex items-center justify-center">
+        {images.map((src, i) => {
+          const positionIndex = (i - activeIndex + images.length) % images.length;
+          const isActive = positionIndex === 0;
 
-        return (
-          <motion.button
-            key={src}
-            type="button"
-            onClick={() => setActiveIndex((prev) => (prev + 1) % images.length)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setActiveIndex((prev) => (prev + 1) % images.length);
-              }
-            }}
-            aria-label={`View image ${i + 1} of ${event}`}
-            style={{ zIndex: 10 - positionIndex }}
-            animate={getStyles(positionIndex)}
-            transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
-            className={`absolute w-[80%] sm:w-[75%] lg:w-[80%] aspect-[4/3] bg-[#0d0d0f] p-2.5 pb-8 sm:p-3 sm:pb-10 rounded-lg shadow-2xl transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-copper-light/80 cursor-pointer ${
-              isActive ? "border border-copper-light/40" : "border border-white/5 hover:border-white/20"
-            }`}
-          >
-            <div className="w-full h-full overflow-hidden rounded bg-black/40">
-              <img
-                src={src}
-                alt={`${event} screenshot ${i + 1}`}
-                className="w-full h-full object-cover select-none"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          </motion.button>
-        );
-      })}
+          return (
+            <motion.button
+              key={src}
+              type="button"
+              onClick={handleNext}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleNext();
+                }
+              }}
+              aria-label={`View image ${i + 1} of ${event}`}
+              style={{ zIndex: 10 - positionIndex }}
+              animate={getStyles(positionIndex)}
+              transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
+              className={`absolute w-[80%] sm:w-[75%] lg:w-[80%] aspect-[4/3] bg-[#0d0d0f] p-2.5 pb-8 sm:p-3 sm:pb-10 rounded-lg shadow-2xl transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-copper-light/80 cursor-pointer ${
+                isActive ? "border border-copper-light/40" : "border border-white/5 hover:border-white/20"
+              }`}
+            >
+              <div className="w-full h-full overflow-hidden rounded bg-black/40">
+                <img
+                  src={src}
+                  alt={`${event} screenshot ${i + 1}`}
+                  className="w-full h-full object-cover select-none"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Pagination Indicator */}
+      {images.length > 1 && (
+        <div className="flex justify-center gap-1.5 z-20 pb-2">
+          {images.map((_, dotIdx) => (
+            <button
+              key={dotIdx}
+              type="button"
+              onClick={() => handleDotClick(dotIdx)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer touch-target-expansion ${
+                dotIdx === activeIndex
+                  ? "bg-copper-light w-4"
+                  : "bg-white/30 hover:bg-white/60"
+              }`}
+              aria-label={`Go to slide ${dotIdx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -1046,7 +1152,7 @@ const AchievementsSection = () => {
                 icon: Trophy
               }
             ].map((ach, idx) => (
-              <div key={ach.event} className="relative flex flex-col md:flex-row items-start">
+              <div key={ach.event} className="relative flex flex-col md:flex-row items-start pl-10 md:pl-20">
                 {/* Timeline Node */}
                 <TimelineNode />
                 {/* Achievement Card */}
@@ -1055,12 +1161,12 @@ const AchievementsSection = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.1 }}
-                  className="w-full ml-16 md:ml-20 group relative"
+                  className="w-full group relative"
                 >
                   <div className="relative bg-elite-black/40 backdrop-blur-sm border border-white/5 p-0 hover:border-copper-light/30 transition-all duration-500 shadow-2xl overflow-hidden flex flex-col lg:flex-row">
                     {/* Image Section */}
                     {ach.images && ach.images.length > 0 && (
-                      <div className="w-full lg:w-[45%] min-h-[360px] overflow-hidden relative bg-black/25 flex items-center justify-center p-6 border-b lg:border-b-0 lg:border-r border-white/5">
+                      <div className="w-full lg:w-[45%] min-h-[240px] sm:min-h-[320px] lg:min-h-[360px] overflow-hidden relative bg-black/25 flex items-center justify-center p-6 border-b lg:border-b-0 lg:border-r border-white/5">
                         <ImageStack images={ach.images} event={ach.event} />
                         
                         {/* Floating Icon */}
@@ -1118,8 +1224,110 @@ interface Project {
 const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: React.Key }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [direction, setDirection] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const slideVariants = {
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (project.images.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      if (!document.hidden) {
+        setDirection(1);
+        setCurrentIdx((prev) => (prev + 1) % project.images.length);
+      }
+    }, 3500);
+  };
+
+  const stopAutoplay = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startAutoplay();
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      stopAutoplay();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [project.images.length]);
+
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setDirection(1);
+    setCurrentIdx((prev) => (prev + 1) % project.images.length);
+    startAutoplay();
+  };
+
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setDirection(-1);
+    setCurrentIdx((prev) => (prev - 1 + project.images.length) % project.images.length);
+    startAutoplay();
+  };
+
+  const handleDotClick = (index: number, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setDirection(index > currentIdx ? 1 : -1);
+    setCurrentIdx(index);
+    startAutoplay();
+  };
+
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const difference = touchStartX.current - touchEndX.current;
+    const swipeThreshold = 40;
+    if (difference > swipeThreshold) {
+      handleNext();
+    } else if (difference < -swipeThreshold) {
+      handlePrev();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  const slideVariants = shouldReduceMotion ? {
+    enter: {
+      opacity: 0
+    },
+    center: {
+      opacity: 1,
+      transition: { duration: 0.2 }
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  } : {
     enter: (dir: number) => ({
       x: dir > 0 ? "100%" : "-100%",
       opacity: 0
@@ -1142,27 +1350,6 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
     })
   };
 
-  const handleNext = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDirection(1);
-    setCurrentIdx((prev) => (prev + 1) % project.images.length);
-  };
-
-  const handlePrev = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDirection(-1);
-    setCurrentIdx((prev) => (prev - 1 + project.images.length) % project.images.length);
-  };
-
-  const handleDotClick = (index: number, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDirection(index > currentIdx ? 1 : -1);
-    setCurrentIdx(index);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -1174,8 +1361,13 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
     >
       <div>
         {/* Carousel Image Container */}
-        <div className="aspect-video w-full overflow-hidden relative bg-black/40">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
+        <div 
+          className="aspect-video w-full overflow-hidden relative bg-black/40 cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <AnimatePresence initial={false} custom={direction}>
             <motion.img
               key={currentIdx}
               src={project.images[currentIdx]}
@@ -1187,6 +1379,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
               exit="exit"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               referrerPolicy="no-referrer"
+              loading={idx === 0 ? "eager" : "lazy"}
             />
           </AnimatePresence>
 
@@ -1195,7 +1388,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
             <button
               onClick={handlePrev}
               type="button"
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-0 group-hover:opacity-100"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 cursor-pointer"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -1207,7 +1400,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
             <button
               onClick={handleNext}
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-0 group-hover:opacity-100"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/40 hover:bg-copper-light/80 text-white/70 hover:text-black border border-white/10 hover:border-transparent transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 cursor-pointer"
               aria-label="Next image"
             >
               <ChevronRight className="w-4 h-4" />
@@ -1222,7 +1415,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
                   key={dotIdx}
                   type="button"
                   onClick={(e) => handleDotClick(dotIdx, e)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer touch-target-expansion ${
                     dotIdx === currentIdx
                       ? "bg-copper-light w-4"
                       : "bg-white/30 hover:bg-white/60"
@@ -1235,15 +1428,15 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
         </div>
 
         {/* Card Info */}
-        <div className="p-8">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-2xl font-serif text-white tracking-wide">{project.title}</h3>
-            <div className="flex gap-4">
+        <div className="p-5 xs:p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <h3 className="text-xl sm:text-2xl font-serif text-white tracking-wide leading-snug">{project.title}</h3>
+            <div className="flex gap-4 shrink-0">
               <a
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5"
+                className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5 interactive"
                 title="View Repository"
               >
                 <Github className="w-5 h-5" />
@@ -1253,7 +1446,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
                   href={project.live}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5"
+                  className="text-white/40 hover:text-copper-light transition-colors p-1 rounded-md hover:bg-white/5 interactive"
                   title="Live Demo"
                 >
                   <ExternalLink className="w-5 h-5" />
@@ -1266,7 +1459,7 @@ const ProjectCard = ({ project, idx }: { project: Project; idx: number; key?: Re
       </div>
 
       {/* Tags & Border Indicator */}
-      <div className="px-8 pb-8 pt-0">
+      <div className="px-5 pb-5 xs:px-6 xs:pb-6 sm:px-8 sm:pb-8 pt-0">
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (
             <span
@@ -1324,7 +1517,7 @@ export default function App() {
                   transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
                   className="flex flex-col items-center justify-center text-center select-none mb-20 md:mb-24"
                 >
-                  <h1 className="text-[18vw] md:text-[14vw] font-sans font-black leading-[0.8] text-[#F5F5F3] tracking-tighter flex flex-col items-center">
+                  <h1 className="text-[clamp(2.5rem,18vw,6rem)] md:text-[clamp(6rem,14vw,11rem)] font-sans font-black leading-[0.8] text-[#F5F5F3] tracking-tighter flex flex-col items-center">
                     <span className="hover:text-copper-light transition-colors duration-700 cursor-default">SAHANA</span>
                     <span className="hover:text-copper-light transition-colors duration-700 cursor-default">ARUMUGAM</span>
                   </h1>
@@ -1530,13 +1723,13 @@ export default function App() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.8, delay: idx * 0.1 }}
-                      className="relative p-8 border border-white/5 bg-white/[0.01] rounded-2xl overflow-hidden group"
+                      className="relative p-5 xs:p-6 sm:p-8 border border-white/5 bg-white/[0.01] rounded-2xl overflow-hidden group"
                     >
                       {/* Architectural Accent */}
                       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-copper-light/20 to-transparent" />
                       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
                       
-                      <h3 className="text-sm uppercase tracking-[0.3em] text-copper-light mb-10 font-medium">
+                      <h3 className="text-sm uppercase tracking-[0.3em] text-copper-light mb-6 sm:mb-10 font-medium">
                         {category.title}
                       </h3>
                       
